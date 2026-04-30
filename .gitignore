@@ -1,0 +1,29 @@
+# Root ignores (frontend + backend)
+
+# Env files / secrets
+.env
+.env.*
+!.env.example
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+backend/venv/
+backend/.venv/
+
+# Logs
+*.log
+
+# Asset leftovers
+DataPilot_icon.png
+backend/DataPilot_icon.png
+
+# OS
+.DS_Store
+Thumbs.db
