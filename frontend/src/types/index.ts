@@ -68,6 +68,13 @@ export interface DBTModel {
   status: 'pass' | 'fail' | 'not-run';
   tests: DBTTest[];
   dependencies: string[];
+  jobId?: string | null;
+  jobName?: string;
+  taskKey?: string | null;
+  commands?: string[];
+  lastRun?: string | null;
+  duration?: number | null;
+  runId?: string | null;
 }
 
 export interface DBTTest {

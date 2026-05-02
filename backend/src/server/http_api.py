@@ -18,6 +18,7 @@ from src.tools.databricks.connection import (
     ping_databricks_api,
     validate_databricks_connection_config,
 )
+from src.tools.databricks.dbt import list_dbt_models, run_dbt_model
 from src.tools.databricks.jobs import get_job_url, list_jobs, run_job, stop_job
 from src.tools.databricks.pipelines import list_pipelines, start_pipeline, stop_pipeline
 from src.tools.db_ai_kit import (
@@ -249,6 +250,32 @@ def _alerts(_request: Request) -> JSONResponse:
     return JSONResponse(data, status_code=status)
 
 
+def _dbt_models(_request: Request) -> JSONResponse:
+    data = list_dbt_models()
+    status = 200 if data.get("ok") else 503
+    return JSONResponse(data, status_code=status)
+
+
+async def _dbt_run(request: Request) -> JSONResponse:
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse(
+            {
+                "ok": False,
+                "errorType": "ValueError",
+                "error": "Invalid JSON body.",
+                "message": "Invalid JSON body.",
+            },
+            status_code=400,
+        )
+
+    job_id = (body or {}).get("jobId")
+    data = run_dbt_model(job_id if isinstance(job_id, str) else "")
+    status = 200 if data.get("ok") else (400 if data.get("errorType") == "ValueError" else 503)
+    return JSONResponse(data, status_code=status)
+
+
 def _db_ai_kit_skills(_request: Request) -> JSONResponse:
     data = list_db_ai_kit_skills()
     status = 200 if data.get("ok") else 503
@@ -335,6 +362,12 @@ def create_app() -> Starlette:
             Route("/api/chat", _chat, methods=["POST"]),
             Route("/api/logs", _logs, methods=["GET"]),
             Route("/api/alerts", _alerts, methods=["GET"]),
+
+            # dbt on Databricks
+            Route("/dbt/models", _dbt_models, methods=["GET"]),
+            Route("/dbt/run", _dbt_run, methods=["POST"]),
+            Route("/api/dbt/models", _dbt_models, methods=["GET"]),
+            Route("/api/dbt/run", _dbt_run, methods=["POST"]),
 
             # db-ai-kit
             Route("/db-ai-kit/skills", _db_ai_kit_skills, methods=["GET"]),

@@ -1,16 +1,23 @@
 {
-  "experimentalServices": {
-    "frontend": {
-      "entrypoint": "frontend",
-      "routePrefix": "/",
-      "framework": "vite",
-      "includeFiles": ["db-ai-kit/**"]
-    },
-    "backend": {
-      "entrypoint": "backend",
-      "routePrefix": "/api",
-      "excludeFiles": ["venv/**", ".venv/**", "__pycache__/**"],
-      "includeFiles": ["db-ai-kit/**"]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd frontend && npm install",
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/dist",
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 60,
+      "includeFiles": "{backend/**,db-ai-kit/**}",
+      "excludeFiles": "{backend/.env,backend/venv/**,backend/.venv/**,**/__pycache__/**}"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
+    }
+  ]
 }
