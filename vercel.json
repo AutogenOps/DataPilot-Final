@@ -1,19 +1,20 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
   "installCommand": "cd frontend && npm install",
   "buildCommand": "cd frontend && npm run build",
   "outputDirectory": "frontend/dist",
   "functions": {
-    "api/index.py": {
+    "api/*.py": {
       "maxDuration": 60,
       "includeFiles": "{backend/**,db-ai-kit/**}",
-      "excludeFiles": "{backend/.env,backend/venv/**,backend/.venv/**,**/__pycache__/**}"
+      "excludeFiles": "backend/{.env,venv/**,.venv/**,**/__pycache__/**}"
     }
   },
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/index.py"
+      "destination": "/api/index"
     },
     {
       "source": "/:path*",
