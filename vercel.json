@@ -1,4 +1,5 @@
 {
+  "includeFiles": ["db-ai-kit/**"],
   "experimentalServices": {
     "frontend": {
       "entrypoint": "frontend",
@@ -8,8 +9,7 @@
     "backend": {
       "entrypoint": "backend",
       "routePrefix": "/api",
-      "excludeFiles": ["venv/**", ".venv/**", "__pycache__/**"],
-      "includeFiles": ["db-ai-kit/**"]
+      "excludeFiles": ["venv/**", ".venv/**", "__pycache__/**"]
     }
   }
 }
