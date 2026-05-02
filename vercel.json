@@ -3,7 +3,8 @@
     "frontend": {
       "entrypoint": "frontend",
       "routePrefix": "/",
-      "framework": "vite"
+      "framework": "vite",
+      "includeFiles": ["db-ai-kit/**"]
     },
     "backend": {
       "entrypoint": "backend",
