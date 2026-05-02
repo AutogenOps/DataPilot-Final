@@ -12,6 +12,7 @@ from starlette.routing import Route
 from src.config.env import env
 from src.server.logs import log_buffer
 from src.server.chat_router import handle_chat_message
+from src.server.mcp_integration import get_mcp_integration, initialize_mcp_for_production
 from src.tools.databricks.clusters import list_clusters, start_cluster, terminate_cluster
 from src.tools.databricks.connection import (
     ping_databricks_api,
@@ -273,6 +274,20 @@ def _db_ai_kit_mcp(_request: Request) -> JSONResponse:
     return JSONResponse(data, status_code=status)
 
 
+def _mcp_tools_list(_request: Request) -> JSONResponse:
+    """List all available MCP tools (production-ready endpoint)."""
+    mcp_integration = get_mcp_integration()
+    data = mcp_integration.get_tools_list()
+    return JSONResponse(data, status_code=200)
+
+
+def _mcp_config(_request: Request) -> JSONResponse:
+    """Return MCP server configuration metadata."""
+    mcp_integration = get_mcp_integration()
+    data = mcp_integration.get_mcp_config()
+    return JSONResponse(data, status_code=200)
+
+
 def create_app() -> Starlette:
     app = Starlette(
         debug=False,
@@ -330,10 +345,19 @@ def create_app() -> Starlette:
             Route("/api/db-ai-kit/skills/{skill_name:str}", _db_ai_kit_skill, methods=["GET"]),
             Route("/api/db-ai-kit/assets", _db_ai_kit_assets, methods=["GET"]),
             Route("/api/db-ai-kit/mcp", _db_ai_kit_mcp, methods=["GET"]),
+
+            # MCP Tools (production-ready endpoints)
+            Route("/mcp/tools", _mcp_tools_list, methods=["GET"]),
+            Route("/mcp/config", _mcp_config, methods=["GET"]),
+            Route("/api/mcp/tools", _mcp_tools_list, methods=["GET"]),
+            Route("/api/mcp/config", _mcp_config, methods=["GET"]),
         ],
     )
 
     log_buffer.add("INFO", "HTTP API initialized")
+
+    # Initialize MCP tools for production deployment
+    initialize_mcp_for_production()
 
     app.add_middleware(RequestLoggingMiddleware)
 
