@@ -8,7 +8,8 @@
     "backend": {
       "entrypoint": "backend",
       "routePrefix": "/api",
-      "excludeFiles": ["venv/**", ".venv/**", "__pycache__/**"]
+      "excludeFiles": ["venv/**", ".venv/**", "__pycache__/**"],
+      "includeFiles": ["db-ai-kit/**"]
     }
   }
 }
